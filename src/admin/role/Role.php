@@ -8,4 +8,6 @@ class Role extends AdminBase {
         $url = $this->domainUrl . '/admin/v1.1/role/'.$roleCode;
         return BaseService::sendNormalRequest('GET', $url ,[]);
     }
+
+
 }
