@@ -75,7 +75,6 @@ class BaseService
             $header[] = 'userCode:php-sdk';
         }
         $header[] = "Content-Type:application/json";
-
         if( 'get' == strtolower($method)){
             $result = Http::get($url,$data,$header);
         }else{
