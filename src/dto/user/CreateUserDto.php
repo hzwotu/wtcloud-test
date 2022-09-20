@@ -33,6 +33,6 @@ class CreateUserDto extends NormalBaseDto
         if(empty($params['source'])){
             throw new \ErrorException('来源不能为空');
         }
-        return $this->formatParam($params,$this->param ,true ,["idCard" ,"mobile","name"]);
+        return $this->formatParam($params,$this->param ,true ,[ "name"]);
     }
 }
