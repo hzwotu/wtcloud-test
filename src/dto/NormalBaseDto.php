@@ -15,7 +15,7 @@ class NormalBaseDto{
                 if(in_array($key,$validFields) && empty($params[$key])){
                     throw new \ErrorException($key .'  不能为空');
                 }
-                if(isset($params[$key]) && gettype($params[$key]) == gettype($value) ){
+                if(isset($params[$key]) && (in_array(gettype($value),['string','integer']) || gettype($params[$key]) == gettype($value) ) ){
                     $requestDto[$key] = $params[$key];
                 }
             }
