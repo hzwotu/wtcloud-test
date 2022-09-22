@@ -19,6 +19,15 @@ class User extends AuthBase {
         return BaseService::sendNormalRequest('GET', $url ,[],true);
     }
 
+
+    public  function getUserInfoByCode($userCode){
+        if(empty($userCode)){
+            throw new \ErrorException('用户编码不能为空');
+        }
+        $url = $this->domainUrl . '/auth/user/v1/user_info/'.$userCode;
+        return BaseService::sendNormalRequest('GET', $url ,[],true);
+    }
+
     /**
      * @param $params
      * @return mixed|string
