@@ -8,6 +8,7 @@ class Config{
         'finance' => 'http://47.98.193.2:36015',
         'admin' => 'http://47.98.193.2:36021',
         'id' => 'http://47.98.193.2:39001',
+        'gateway' => 'https://api.cloud.wozp.cn'
 
     ];
     private $domainUrl;
@@ -16,9 +17,10 @@ class Config{
             throw new \ErrorException('服务不存在');
         }
         $this->domainUrl = $this->serviceDomain[$domain];
-
     }
     public function getServiceDomain(){
         return $this->domainUrl;
     }
+
+
 }

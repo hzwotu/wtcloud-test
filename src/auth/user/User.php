@@ -15,7 +15,7 @@ class User extends AuthBase {
      * https://api.cloud.wozp.cn/doc.html#/%E7%94%A8%E6%88%B7%E6%9C%8D%E5%8A%A1/%E7%94%A8%E6%88%B7API/queryByCodeUsingGET
      */
     public  function getUserInfo(){
-        $url = $this->domainUrl . '/auth/user/v1/info';
+        $url = $this->gatewayDomainUrl . '/auth/user/v1/info';
         return BaseService::sendNormalRequest('GET', $url ,[],true);
     }
 
@@ -25,7 +25,7 @@ class User extends AuthBase {
             throw new \ErrorException('用户编码不能为空');
         }
         $url = $this->domainUrl . '/auth/user/v1/user_info/'.$userCode;
-        return BaseService::sendNormalRequest('GET', $url ,[],true);
+        return BaseService::sendNormalRequest('GET', $url ,[]);
     }
 
     /**
@@ -49,7 +49,7 @@ class User extends AuthBase {
      * https://api.cloud.wozp.cn/doc.html#/%E7%94%A8%E6%88%B7%E6%9C%8D%E5%8A%A1/%E7%94%A8%E6%88%B7API/organizationListUsingGET
      */
     public  function getMyOrganization(){
-        $url = $this->domainUrl . '/auth/user/v1/organization_list';
+        $url = $this->gatewayDomainUrl . '/auth/user/v1/organization_list';
         return BaseService::sendNormalRequest('GET', $url ,[],true);
     }
 
@@ -63,7 +63,7 @@ class User extends AuthBase {
             throw new \ErrorException('用户编码不能为空');
         }
         $url = $this->domainUrl . '/auth/user/v1/user_organization_list/'.$userCode;
-        return BaseService::sendNormalRequest('GET', $url ,[],true);
+        return BaseService::sendNormalRequest('GET', $url ,[]);
     }
 
     /**
@@ -74,7 +74,7 @@ class User extends AuthBase {
      * https://api.cloud.wozp.cn/doc.html#/%E7%94%A8%E6%88%B7%E6%9C%8D%E5%8A%A1/%E7%94%A8%E6%88%B7API/groupListUsingGET
      */
     public  function getMyGroup(){
-        $url = $this->domainUrl . '/auth/user/v1/group_list';
+        $url = $this->gatewayDomainUrl . '/auth/user/v1/group_list';
         return BaseService::sendNormalRequest('GET', $url ,[],true);
     }
 
@@ -88,7 +88,7 @@ class User extends AuthBase {
             throw new \ErrorException('用户编码不能为空');
         }
         $url = $this->domainUrl . '/auth/user/v1/user_group_list/'.$userCode;
-        return BaseService::sendNormalRequest('GET', $url ,[],true);
+        return BaseService::sendNormalRequest('GET', $url ,[]);
     }
 
 
