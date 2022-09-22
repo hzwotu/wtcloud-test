@@ -46,7 +46,9 @@ class BaseService
             if ('HTTP_' == substr($key, 0, 5)) {
                 $headers[str_replace('_', '-', substr($key, 5))] = $value;
             }
-            if (isset($_SERVER['PHP_AUTH_DIGEST'])) {
+            if(isset($_SERVER['AUTHORIZATION_PLATFORM'])){
+                $header['AUTHORIZATION'] = $_SERVER['AUTHORIZATION_PLATFORM'];
+            } elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
                 $header['AUTHORIZATION'] = $_SERVER['PHP_AUTH_DIGEST'];
             } elseif (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
                 $header['AUTHORIZATION'] = base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $_SERVER['PHP_AUTH_PW']);
