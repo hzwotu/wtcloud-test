@@ -36,7 +36,7 @@ class UpdateSiteDto extends NormalBaseDto
         "contactMobile" => "",//联系人手机
         "contactName" => "",//联系人
         "contactPost" => "",//联系人职位
-        "expireTime" => 0,//到期时间, 13位时间戳
+        "expireTime" => null,//到期时间, 13位时间戳
         "name" => "",//名称
         "padDomain" => "",//	pad域名
         "pcDomain" => "",//pc域名
