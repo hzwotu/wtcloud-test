@@ -20,47 +20,22 @@ class BaseService
      */
     public static function sendRequest($method, $url, $data = [], $needToken = false)
     {
-        $headers = self::getHeader();
-//        $zipKin = ZipKin::getInstance('http://tracing-analysis-dc-hz.aliyuncs.com/adapt_cn6b5ghmxw@2d20a8f3746a69e_cn6b5ghmxw@53df7ad2afe8301/api/v2/spans','sdk-test');
+
         $zipKin = ZipKin::getInstance();
         //在一个请求的初试位置 开启一个链路追踪
         $zipKin->startAction('php-sdk: '.$url,json_encode($data));
         $tracing = $zipKin->getTracing();
         $injector = $tracing->getPropagation()->getInjector(new Map());
         $childSpan = $zipKin->getChildSpan();
+        $headers = [];
         $injector($childSpan->getContext(), $headers);
 
         $headers['Content-Type'] = 'application/json';
         $headers['accept'] = 'application/json, text/plain, */*';
-        $headers['origin'] = 'https://enx.wozhipei.com';
-//        var_dump($headers);
-        if (!empty($headers['AUTHORIZATION']) && $needToken) {
-            $headers['Authorization'] = $headers['AUTHORIZATION'];
-        } else {
-            $headers['Authorization'] = 'php-sdk';
-            $headers['userCode'] = 'php-sdk';
-        }
-        $httpClient = new Client(['verify' => false]);
-        $option['json'] = $data;
-        $request = new \GuzzleHttp\Psr7\Request($method, $url, $headers);
-        $response = $httpClient->send($request, $option);
+
+        $result = self::send($method,$url,$data,$needToken,$headers);
         $childSpan->finish();
-        $resultData = json_decode($response->getBody()->getContents(), true);
-//        var_dump($resultData);
-        if (empty($resultData['messageCode'])) {
-            $errorMessage = $resultData['message'] ?? '请求失败';
-            $zipKin->endAction();
-            throw new \ErrorException($errorMessage);
-        } elseif ($resultData['messageCode'] == 9997) {
-            $zipKin->endAction();
-            return [];
-        } elseif ($resultData['messageCode'] != 200) {
-            $errorMessage = $resultData['message'] ?? '请求失败';
-            $zipKin->endAction();
-            throw new \ErrorException($errorMessage);
-        }
-//        $zipKin->endAction();
-        return $resultData['data'] ?? 'success';
+        return $result;
     }
 
 
@@ -105,21 +80,28 @@ class BaseService
     }
 
     private static function send($method, $url, $data = [], $needToken = false, $header = []){
+        $resultHeader = [];
+        if(!empty($header)){
+            foreach ($header as $key=>$value){
+                $resultHeader[] = $key .':' . $value;
+            }
+        }
         $headers = self::getHeader();
         if (!empty($headers['AUTHORIZATION']) && $needToken) {
-            $header[] = 'Authorization:' . $headers['AUTHORIZATION'];
+            $resultHeader[] = 'Authorization:' . $headers['AUTHORIZATION'];
         } else {
-            $header[] = 'Authorization:php-sdk';
-            $header[] = 'userCode:php-sdk';
+            $resultHeader[] = 'Authorization:php-sdk';
+            $resultHeader[] = 'userCode:php-sdk';
         }
-        $header[] = "Content-Type:application/json";
+        $resultHeader[] = "Content-Type:application/json";
         if ('get' == strtolower($method)) {
-            $result = Http::get($url, $data, $header);
+            $result = Http::get($url, $data, $resultHeader);
         } else {
-            $result = Http::send($url, $method, [], json_encode($data), $header);
+            $result = Http::send($url, $method, [], json_encode($data), $resultHeader);
         }
+//        var_dump($resultHeader);
         $resultData = json_decode($result, true);
-//        var_dump($result);
+
         if (empty($resultData['messageCode'])) {
             $errorMessage = $resultData['message'] ?? '请求失败';
             throw new \ErrorException($errorMessage);
