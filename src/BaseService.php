@@ -8,6 +8,7 @@ use Zipkin\Propagation\Map;
 
 class BaseService
 {
+    private static $openZipkin = true;
 
     /**
      * @param $method
@@ -20,41 +21,42 @@ class BaseService
     public static function sendRequest($method, $url, $data = [], $needToken = false)
     {
         $headers = self::getHeader();
-        $zipKin = ZipKin::getInstance('http://tracing-analysis-dc-hz.aliyuncs.com/adapt_cn6b5ghmxw@2d20a8f3746a69e_cn6b5ghmxw@53df7ad2afe8301','sdk-test');
-        $zipKin->startAction('uri路由','请求参数');
-//执行业务代码A
-        $zipKin->addChild('A执行的sql/redis/http等语句','记录数据的tag名');
-        $zipKin->finishChild();
-        $zipKin->endAction();
+//        $zipKin = ZipKin::getInstance('http://tracing-analysis-dc-hz.aliyuncs.com/adapt_cn6b5ghmxw@2d20a8f3746a69e_cn6b5ghmxw@53df7ad2afe8301/api/v2/spans','sdk-test');
+        $zipKin = ZipKin::getInstance();
+        //在一个请求的初试位置 开启一个链路追踪
+        $zipKin->startAction('php-sdk: '.$url,json_encode($data));
         $tracing = $zipKin->getTracing();
         $injector = $tracing->getPropagation()->getInjector(new Map());
         $childSpan = $zipKin->getChildSpan();
         $injector($childSpan->getContext(), $headers);
+
         $headers['Content-Type'] = 'application/json';
         $headers['accept'] = 'application/json, text/plain, */*';
-        //获取请求头中header
-        $headers = self::getHeader();
+        $headers['origin'] = 'https://enx.wozhipei.com';
+//        var_dump($headers);
         if (!empty($headers['AUTHORIZATION']) && $needToken) {
             $headers['Authorization'] = $headers['AUTHORIZATION'];
         } else {
             $headers['Authorization'] = 'php-sdk';
             $headers['userCode'] = 'php-sdk';
         }
-        $httpClient = new Client();
+        $httpClient = new Client(['verify' => false]);
         $option['json'] = $data;
         $request = new \GuzzleHttp\Psr7\Request($method, $url, $headers);
         $response = $httpClient->send($request, $option);
-
-        $resultData = json_decode($response->getBody()->getContents(), true);
-//        var_dump($result);
         $childSpan->finish();
+        $resultData = json_decode($response->getBody()->getContents(), true);
+//        var_dump($resultData);
         if (empty($resultData['messageCode'])) {
             $errorMessage = $resultData['message'] ?? '请求失败';
+            $zipKin->endAction();
             throw new \ErrorException($errorMessage);
         } elseif ($resultData['messageCode'] == 9997) {
+            $zipKin->endAction();
             return [];
         } elseif ($resultData['messageCode'] != 200) {
             $errorMessage = $resultData['message'] ?? '请求失败';
+            $zipKin->endAction();
             throw new \ErrorException($errorMessage);
         }
 //        $zipKin->endAction();
@@ -94,6 +96,15 @@ class BaseService
 
     public static function sendNormalRequest($method, $url, $data = [], $needToken = false, $header = [])
     {
+        if(self::$openZipkin){
+            return self::sendRequest($method, $url, $data, $needToken );
+        }else{
+            return self::send($method, $url, $data, $needToken , $header);
+        }
+
+    }
+
+    private static function send($method, $url, $data = [], $needToken = false, $header = []){
         $headers = self::getHeader();
         if (!empty($headers['AUTHORIZATION']) && $needToken) {
             $header[] = 'Authorization:' . $headers['AUTHORIZATION'];

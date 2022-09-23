@@ -118,8 +118,6 @@ class ZipKin {
 
 
     public static function createTracing($localServiceName, $localServiceIPv4,$httpReporterURL , $localServicePort = null){
-
-
         $endpoint = Endpoint::create($localServiceName, $localServiceIPv4, null, $localServicePort);
         $reporter = new \Zipkin\Reporters\Http(['endpoint_url' => $httpReporterURL]);
         $sampler = BinarySampler::createAsAlwaysSample();
