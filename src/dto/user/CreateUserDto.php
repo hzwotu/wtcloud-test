@@ -12,6 +12,7 @@ class CreateUserDto extends NormalBaseDto
         "isCertify" => false,
         "mobile" => "",
         "name" => "",
+        "password" => "",
         "source" => 0,
         "sid" => 0,
         "groupList" => []
