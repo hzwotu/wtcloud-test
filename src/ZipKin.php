@@ -95,6 +95,7 @@ class ZipKin {
             foreach ($type as $key => $val) {
                 $childSpan->tag($key, $val);
             }
+            $childSpan->setName($executeStr);
         }else{
             $tag = 'data';
             if(in_array($type,['mysql-select','mysql-execute'])){
