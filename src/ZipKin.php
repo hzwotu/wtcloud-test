@@ -58,10 +58,11 @@ class ZipKin {
      * @param $params
      * 开始一个根span
      */
-    public  function startAction($uri,$params){
+    public  function startAction($uri, $method ,$params){
         self::$rootSpan->setName($uri);
         self::$rootSpan->start();
-        self::$rootSpan->tag('data',json_encode($params));
+        self::$rootSpan->tag('http.method', $method);
+        self::$rootSpan->tag('params',json_encode($params));
         $origin = $_SERVER['HTTP_ORIGIN'] ?? 'default';
         self::$rootSpan->tag('site',$origin);
         $host = $_SERVER['HTTP_HOST'] ?? 'default';
@@ -71,7 +72,12 @@ class ZipKin {
     /**
      *结束整个程序
      */
-    public  function endAction(){
+    public  function endAction($tagArr = []){
+        if ($tagArr !== []) {
+            foreach ($tagArr as $key => $val) {
+                self::$rootSpan->tag($key, $val);
+            }
+        }
         self::$rootSpan->finish();
         $tracers = self::$tracer;
         register_shutdown_function(function () use ($tracers) {
