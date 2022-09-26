@@ -23,10 +23,12 @@ class BaseService
 
         $zipKin = ZipKin::getInstance();
         //在一个请求的初试位置 开启一个链路追踪
-        $zipKin->startAction('php-sdk: '.$url,json_encode($data));
+//        $zipKin->startAction('php-sdk: '.$url,json_encode($data));
         $tracing = $zipKin->getTracing();
         $injector = $tracing->getPropagation()->getInjector(new Map());
+        $zipKin->addChild(json_encode($data),'服务调用');
         $childSpan = $zipKin->getChildSpan();
+
         $headers = [];
         $injector($childSpan->getContext(), $headers);
 

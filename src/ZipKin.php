@@ -91,12 +91,19 @@ class ZipKin {
         $childSpan = self::$tracer->newChild(self::$span->getContext());
 
         $childSpan->start();
-        $tag = 'data';
-        if(in_array($type,['mysql-select','mysql-execute'])){
-            $tag = 'db.statement';
+        if(is_array($type)){
+            foreach ($type as $key => $val) {
+                $childSpan->tag($key, $val);
+            }
+        }else{
+            $tag = 'data';
+            if(in_array($type,['mysql-select','mysql-execute'])){
+                $tag = 'db.statement';
+            }
+            $childSpan->tag($tag,$executeStr);
+            $childSpan->setName($type);
         }
-        $childSpan->tag($tag,$executeStr);
-        $childSpan->setName($type);
+
         self::$childSpan = $childSpan;
     }
 
@@ -104,7 +111,12 @@ class ZipKin {
      *
      *结束子span
      */
-    public function finishChild(){
+    public function finishChild(array $tagArr = []) {
+        if (!empty($tagArr)) {
+            foreach ($tagArr as $key => $val) {
+                self::$childSpan->tag($key, $val);
+            }
+        }
         self::$childSpan->finish();
     }
 
