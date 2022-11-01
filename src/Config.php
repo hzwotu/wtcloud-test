@@ -8,6 +8,7 @@ class Config{
         'finance' => 'http://47.98.193.2:36015',
         'admin' => 'http://47.98.193.2:36021',
         'id' => 'http://47.98.193.2:39001',
+        'common-data' => 'http://47.98.193.2:36026',
         'gateway' => 'https://api.cloud.wozp.cn'
 
     ];
