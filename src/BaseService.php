@@ -8,7 +8,7 @@ use Zipkin\Propagation\Map;
 
 class BaseService
 {
-    private static $openZipkin = false;
+    private static $openZipkin = true;
 
     /**
      * @param $method
@@ -91,6 +91,7 @@ class BaseService
         $headers = self::getHeader();
         if (!empty($headers['AUTHORIZATION']) && $needToken) {
             $resultHeader[] = 'Authorization:' . $headers['AUTHORIZATION'];
+            $resultHeader[] = 'X-Site-Alias:' . $headers['X-SITE-ALIAS'];
         } else {
             $resultHeader[] = 'Authorization:php-sdk';
             $resultHeader[] = 'userCode:php-sdk';
