@@ -20,6 +20,11 @@ class User extends AuthBase {
     }
 
 
+    /**
+     * @param $userCode
+     * @return array|mixed|string
+     * @throws \ErrorException
+     */
     public  function getUserInfoByCode($userCode){
         if(empty($userCode)){
             throw new \ErrorException('用户编码不能为空');
