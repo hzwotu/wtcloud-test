@@ -102,6 +102,9 @@ class BaseService
         } else {
             $result = Http::send($url, $method, [], json_encode($data), $resultHeader);
         }
+        if (!empty($result['httpCode']) && $result['httpCode'] == 401) {
+            http_response_code(401);exit;
+        }
 //        var_dump($resultHeader);
         $resultData = json_decode($result, true);
 
